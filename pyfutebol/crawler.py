@@ -26,43 +26,49 @@ def jogos_de_hoje(format='dict', cache=True):
     championships = page.find_all('div', class_='container content')
     
     results = []
-    
+    cont = 0
+
     for id, championship in enumerate(championships):
-        matchs = championship.find_all('div', class_='row align-items-center content')
         
-        for match in matchs:
-            status = match.find('span', class_='status-name').text
-            teams = match.find_all('div', class_='team-name')
-            status = match.find('span', class_='status-name').text
-            scoreboard = match.find_all('span', class_='badge badge-default')
+        if cont != 0:
+
+            matchs = championship.find_all('div', class_='row align-items-center content')
             
-            team_home = teams[0].text.strip()
-            team_visitor = teams[1].text.strip()
-            
-            info = {
-                'match': '{} x {}'.format(team_home, team_visitor),
-                'status': status,
-                'league': titles[id].text,
-            }
-            
-            score = {}
-            
-            # Se o jogo já começou então existe placar.
-            try:
-                score['scoreboard'] = {
-                    team_home: scoreboard[0].text,
-                    team_visitor: scoreboard[1].text
+            for match in matchs:
+                status = match.find('span', class_='status-name').text
+                teams = match.find_all('div', class_='team-name')
+                status = match.find('span', class_='status-name').text
+                scoreboard = match.find_all('span', class_='badge badge-default')
+                
+                team_home = teams[0].text.strip()
+                team_visitor = teams[1].text.strip()
+                
+                info = {
+                    'match': '{} x {}'.format(team_home, team_visitor),
+                    'status': status,
+                    'league': titles[id].text,
                 }
-                score['summary'] = '{} x {}'.format(scoreboard[0].text, scoreboard[1].text)
-            # Caso não tenha começado, armazena o horário de início
-            except:
-                score['start_in'] = status
-                score['status'] = 'EM BREVE'
-            
-            info.update(score)
-            
-            results.append(info)
-        
+                
+                score = {}
+                
+                # Se o jogo já começou então existe placar.
+                try:
+                    score['scoreboard'] = {
+                        team_home: scoreboard[0].text,
+                        team_visitor: scoreboard[1].text
+                    }
+                    score['summary'] = '{} x {}'.format(scoreboard[0].text, scoreboard[1].text)
+                # Caso não tenha começado, armazena o horário de início
+                except:
+                    score['start_in'] = status
+                    score['status'] = 'EM BREVE'
+                
+                info.update(score)
+                
+                results.append(info)
+        else:
+            cont = cont + 1
+
     if (format == 'json'):
         return json.dumps(results)
     elif (format == 'xml'):
