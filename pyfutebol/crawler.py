@@ -26,11 +26,8 @@ def jogos_de_hoje(format='dict', cache=True):
     championships = page.find_all('div', class_='container content')
     
     results = []
-    cont = 0
 
     for id, championship in enumerate(championships):
-        
- #       if cont != 0:
 
             matchs = championship.find_all('div', class_='row align-items-center content')
             
@@ -66,8 +63,6 @@ def jogos_de_hoje(format='dict', cache=True):
                 info.update(score)
                 
                 results.append(info)
-#        else:
- #           cont = cont + 1
 
     if (format == 'json'):
         return json.dumps(results)
